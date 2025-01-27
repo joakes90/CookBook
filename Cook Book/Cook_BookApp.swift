@@ -25,7 +25,7 @@ struct Cook_BookApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RecipesView()
         }
         .modelContainer(sharedModelContainer)
     }
