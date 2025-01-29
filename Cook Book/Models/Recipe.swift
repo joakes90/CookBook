@@ -26,11 +26,13 @@ struct Recipe: Codable {
         case youtubeURL = "youtube_url"
     }
     
+    @MainActor
     var cachedSmallPhoto: Data? {
         guard let url = smallPhotoURL else { return nil }
         return NetworkController.shared.imageForURL(url)
     }
     
+    @MainActor
     var cachedLargePhoto: Data? {
         guard let url = largePhotoURL else { return nil }
         return NetworkController.shared.imageForURL(url)

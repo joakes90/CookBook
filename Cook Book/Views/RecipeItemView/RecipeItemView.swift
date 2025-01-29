@@ -15,11 +15,16 @@ struct RecipeItemView: View {
         HStack {
             if let imageData = recipe.cachedSmallPhoto {
                 Image(uiImage: UIImage(data: imageData)!)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 60, height: 60)
+                    .clipShape(Rectangle())
             } else {
                 ProgressView()
+                    .frame(width: 60, height: 60)
                     .task {
                         guard let url = recipe.smallPhotoURL else { return }
-                        await NetworkController.shared.fetchImageImage(for: url)
+                        await _ = NetworkController.shared.fetchImageImage(for: url)
                     }
             }
                 

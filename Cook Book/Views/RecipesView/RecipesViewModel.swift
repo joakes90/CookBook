@@ -11,6 +11,7 @@ class RecipesViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var isLoading = false
     
+    @MainActor
     private let networkController = NetworkController.shared
     
     init() {

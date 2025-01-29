@@ -25,19 +25,10 @@ enum RecipeURL: String {
 class NetworkController {
     static let shared = NetworkController()
     private let imageCache = NSCache<NSURL, NSData>()
-    private let modelContext = try! ModelContainer(for: ImageCache.self).mainContext
+    private let modelContainer = try! ModelContainer(for: ImageCache.self)
     
-    @Model
-    class ImageCache {
-        let url: URL
-        let data: Data
-        let timestamp: Date
-        
-        init(url: URL, data: Data) {
-            self.url = url
-            self.data = data
-            self.timestamp = Date()
-        }
+    private var modelContext: ModelContext {
+        modelContainer.mainContext
     }
     
     private init() {}
@@ -73,7 +64,11 @@ class NetworkController {
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             imageCache.setObject(data as NSData, forKey: url as NSURL)
-            // Persist to Swift Data
+            
+            let newCache = ImageCache(url: url, data: data)
+            modelContext.insert(newCache)
+            try modelContext.save()
+            
             return data
         } catch {
 #if DEBUG
