@@ -21,9 +21,9 @@ class RecipesViewModel: ObservableObject {
     
     @MainActor
     func fetchRecipes() async {
+        recipes.removeAll()
         do {
             recipes = try await networkController.fetchRecipes()
-            print(recipes)
         } catch {
             print(error.localizedDescription)
             // TODO: Handle errors with alert

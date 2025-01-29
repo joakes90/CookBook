@@ -9,20 +9,35 @@ import SwiftUI
 
 struct RecipesView: View {
     @ObservedObject var viewModel: RecipesViewModel = .init()
+
     var body: some View {
         NavigationStack {
             VStack {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .padding()
-                    Text("Loading...")
-                } else {
-                    if viewModel.recipes.isEmpty {
-                        Text("No Recipes Found")
-                            .font(.headline)
-                    } else {
-                        Text("Hello World")
+                if viewModel.isLoading && viewModel.recipes.isEmpty {
+                    VStack {
+                        ProgressView()
+                            .padding()
+                        Text("Loading...")
+                            .foregroundColor(.gray)
                     }
+                } else {
+                    List(viewModel.recipes, id: \.uuid) { recipe in
+                        RecipeItemView(recipe: recipe)
+                    }
+                    .refreshable {
+                        await viewModel.fetchRecipes()
+                    }
+                    .overlay(Group {
+                        if viewModel.recipes.isEmpty {
+                            VStack {
+                                Spacer()
+                                Text("No Recipes Found")
+                                    .font(.headline)
+                                    .foregroundColor(.gray)
+                                Spacer()
+                            }
+                        }
+                    })
                 }
             }
             .navigationTitle("Recipes")
