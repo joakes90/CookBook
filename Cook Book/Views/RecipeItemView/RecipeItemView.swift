@@ -39,6 +39,8 @@ struct RecipeItemView: View {
                     Text(recipe.cuisine)
                         .font(.caption)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
             }
         }
         .buttonStyle(.plain)
