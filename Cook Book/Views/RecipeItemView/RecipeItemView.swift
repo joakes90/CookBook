@@ -10,6 +10,7 @@ import SwiftUI
 struct RecipeItemView: View {
     
     let recipe: Recipe
+    @State var imageData: Data?
     
     var body: some View {
         Button (action: {
@@ -18,7 +19,7 @@ struct RecipeItemView: View {
             }
         }) {
             HStack {
-                if let imageData = recipe.cachedSmallPhoto,
+                if let imageData = imageData,
                    let image = UIImage(data: imageData) {
                     Image(uiImage: image)
                         .resizable()
@@ -29,8 +30,7 @@ struct RecipeItemView: View {
                     ProgressView()
                         .frame(width: 60, height: 60)
                         .task {
-                            guard let url = recipe.smallPhotoURL else { return }
-                            await _ = NetworkController.shared.fetchImage(for: url)
+                            imageData = await recipe.getSmallPhoto()
                         }
                 }
                 

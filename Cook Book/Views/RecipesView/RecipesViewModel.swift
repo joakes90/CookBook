@@ -24,6 +24,7 @@ class RecipesViewModel: ObservableObject {
     @MainActor
     func fetchRecipes() async {
         recipes.removeAll()
+        isLoading = true
         do {
             recipes = try await networkController.fetchRecipes()
             error = nil
@@ -31,6 +32,7 @@ class RecipesViewModel: ObservableObject {
             recipes = []
             self.error = error
         }
+        isLoading = false
     }
     
 }

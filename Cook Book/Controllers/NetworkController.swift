@@ -43,7 +43,7 @@ class NetworkController {
         return recipes.recipes
     }
     
-    func cachedImageForURL(_ url: URL) -> Data? {
+    private func cachedImageForURL(_ url: URL) -> Data? {
         if let cachedData = imageCache.object(forKey: url as NSURL) {
             return Data(referencing: cachedData)
         }
@@ -53,8 +53,7 @@ class NetworkController {
             imageCache.setObject(cachedImage.data as NSData, forKey: url as NSURL)
             return cachedImage.data
         }
-        
-        return UIImage(systemName: "photo")?.pngData()
+        return nil
     }
     
     func fetchImage(for url: URL) async -> Data? {

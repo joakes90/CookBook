@@ -27,15 +27,15 @@ struct Recipe: Codable {
     }
     
     @MainActor
-    var cachedSmallPhoto: Data? {
+    func getSmallPhoto() async -> Data? {
         guard let url = smallPhotoURL else { return nil }
-        return NetworkController.shared.cachedImageForURL(url)
+        return await NetworkController.shared.fetchImage(for: url)
     }
     
     @MainActor
-    var cachedLargePhoto: Data? {
+    func getLargePhoto() async -> Data? {
         guard let url = largePhotoURL else { return nil }
-        return NetworkController.shared.cachedImageForURL(url)
+        return await NetworkController.shared.fetchImage(for: url)
     }
 }
 
