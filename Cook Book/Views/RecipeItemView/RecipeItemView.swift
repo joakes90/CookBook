@@ -12,26 +12,42 @@ struct RecipeItemView: View {
     let recipe: Recipe
     
     var body: some View {
-        HStack {
-            if let imageData = recipe.cachedSmallPhoto {
-                Image(uiImage: UIImage(data: imageData)!)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 60, height: 60)
-                    .clipShape(Rectangle())
-            } else {
-                ProgressView()
-                    .frame(width: 60, height: 60)
-                    .task {
-                        guard let url = recipe.smallPhotoURL else { return }
-                        await _ = NetworkController.shared.fetchImageImage(for: url)
-                    }
+        Button (action: {
+            if let url = recipe.sourceURL {
+                UIApplication.shared.open(url)
             }
+        }) {
+            HStack {
+                if let imageData = recipe.cachedSmallPhoto {
+                    Image(uiImage: UIImage(data: imageData)!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 60, height: 60)
+                        .clipShape(Rectangle())
+                } else {
+                    ProgressView()
+                        .frame(width: 60, height: 60)
+                        .task {
+                            guard let url = recipe.smallPhotoURL else { return }
+                            await _ = NetworkController.shared.fetchImageImage(for: url)
+                        }
+                }
                 
-            VStackLayout(alignment: .leading) {
-                Text(recipe.name)
-                Text(recipe.cuisine)
-                    .font(.caption)
+                VStackLayout(alignment: .leading) {
+                    Text(recipe.name)
+                    Text(recipe.cuisine)
+                        .font(.caption)
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .contextMenu {
+            if let youtubeURL = recipe.youtubeURL {
+                Button {
+                    UIApplication.shared.open(youtubeURL)
+                } label: {
+                    Label("Watch on YouTube", systemImage: "play.rectangle")
+                }
             }
         }
     }
