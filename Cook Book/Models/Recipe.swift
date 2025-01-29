@@ -29,13 +29,13 @@ struct Recipe: Codable {
     @MainActor
     var cachedSmallPhoto: Data? {
         guard let url = smallPhotoURL else { return nil }
-        return NetworkController.shared.imageForURL(url)
+        return NetworkController.shared.cachedImageForURL(url)
     }
     
     @MainActor
     var cachedLargePhoto: Data? {
         guard let url = largePhotoURL else { return nil }
-        return NetworkController.shared.imageForURL(url)
+        return NetworkController.shared.cachedImageForURL(url)
     }
 }
 

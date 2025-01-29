@@ -18,8 +18,9 @@ struct RecipeItemView: View {
             }
         }) {
             HStack {
-                if let imageData = recipe.cachedSmallPhoto {
-                    Image(uiImage: UIImage(data: imageData)!)
+                if let imageData = recipe.cachedSmallPhoto,
+                   let image = UIImage(data: imageData) {
+                    Image(uiImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 60, height: 60)
@@ -29,7 +30,7 @@ struct RecipeItemView: View {
                         .frame(width: 60, height: 60)
                         .task {
                             guard let url = recipe.smallPhotoURL else { return }
-                            await _ = NetworkController.shared.fetchImageImage(for: url)
+                            await _ = NetworkController.shared.fetchImage(for: url)
                         }
                 }
                 

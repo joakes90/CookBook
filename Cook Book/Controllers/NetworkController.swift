@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import UIKit
 
 enum RecipeURL: String {
     case recipe = "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json"
@@ -25,10 +26,10 @@ enum RecipeURL: String {
 class NetworkController {
     static let shared = NetworkController()
     private let imageCache = NSCache<NSURL, NSData>()
-    private let modelContainer = try! ModelContainer(for: ImageCache.self)
+    private let modelContainer = try? ModelContainer(for: ImageCache.self)
     
-    private var modelContext: ModelContext {
-        modelContainer.mainContext
+    private var modelContext: ModelContext? {
+        modelContainer?.mainContext
     }
     
     private init() {}
@@ -42,22 +43,22 @@ class NetworkController {
         return recipes.recipes
     }
     
-    func imageForURL(_ url: URL) -> Data? {
+    func cachedImageForURL(_ url: URL) -> Data? {
         if let cachedData = imageCache.object(forKey: url as NSURL) {
             return Data(referencing: cachedData)
         }
         
         let descriptor = FetchDescriptor<ImageCache>(predicate: #Predicate { $0.url == url })
-        if let cachedImage = try? modelContext.fetch(descriptor).first {
+        if let cachedImage = try? modelContext?.fetch(descriptor).first {
             imageCache.setObject(cachedImage.data as NSData, forKey: url as NSURL)
             return cachedImage.data
         }
         
-        return nil
+        return UIImage(systemName: "photo")?.pngData()
     }
     
-    func fetchImageImage(for url: URL) async -> Data? {
-        if let cachedData = imageForURL(url) {
+    func fetchImage(for url: URL) async -> Data? {
+        if let cachedData = cachedImageForURL(url) {
             return cachedData
         }
         
@@ -66,15 +67,15 @@ class NetworkController {
             imageCache.setObject(data as NSData, forKey: url as NSURL)
             
             let newCache = ImageCache(url: url, data: data)
-            modelContext.insert(newCache)
-            try modelContext.save()
+            modelContext?.insert(newCache)
+            try modelContext?.save()
             
             return data
         } catch {
 #if DEBUG
             print("Error fetching image: \(error)")
 #endif
-            return nil
+            return UIImage(systemName: "photo")?.pngData()
         }
     }
 }
