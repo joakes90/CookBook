@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RecipesView: View {
     @ObservedObject var viewModel: RecipesViewModel = .init()
-
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -41,6 +41,19 @@ struct RecipesView: View {
                 }
             }
             .navigationTitle("Recipes")
+            .alert("Error", isPresented: .init(
+                get: { viewModel.error != nil },
+                set: { if !$0 { viewModel.error = nil } }
+            )) {
+                Button("Retry") {
+                    Task {
+                        await viewModel.fetchRecipes()
+                    }
+                }
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(viewModel.error?.localizedDescription ?? "An unknown error occurred")
+            }
         }
     }
 }

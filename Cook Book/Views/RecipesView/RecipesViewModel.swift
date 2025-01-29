@@ -10,6 +10,7 @@ import Foundation
 class RecipesViewModel: ObservableObject {
     @Published var recipes: [Recipe] = []
     @Published var isLoading = false
+    @Published var error: Error?
     
     @MainActor
     private let networkController = NetworkController.shared
@@ -25,9 +26,10 @@ class RecipesViewModel: ObservableObject {
         recipes.removeAll()
         do {
             recipes = try await networkController.fetchRecipes()
+            error = nil
         } catch {
-            print(error.localizedDescription)
-            // TODO: Handle errors with alert
+            recipes = []
+            self.error = error
         }
     }
     
